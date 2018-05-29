@@ -7,6 +7,14 @@
     <artifactId>deparment-service-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <name>Department Service Server</name>
+
+    <parent>
+        <groupId>com.agilityio</groupId>
+        <artifactId>department-service-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
     <properties>
         <embed-mongo.version>2.0.0</embed-mongo.version>
     </properties>
@@ -17,21 +25,6 @@
             <artifactId>department-service-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>4.3.12.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>5.2.4.Final</version>
-        </dependency>
 
         <!-- This dependency to work with embedded MongoDB in test environment
         Ref: https://dzone.com/articles/spring-boot-with-embedded-mongodb -->
@@ -41,23 +34,32 @@
             <scope>test</scope>
             <version>${embed-mongo.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>4.3.12.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>4.3.12.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
-
-    <name>Department Service Server</name>
-
-    <parent>
-        <groupId>com.agilityio</groupId>
-        <artifactId>department-service-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
