@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: deparment-service
+
+  # MongoDB configuration
+  data:
+    mongodb:
+      authentication-database: admin
+      database: db
+      uri: mongodb://user:pass@localhost:27017/db
