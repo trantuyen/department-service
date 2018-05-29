@@ -6,6 +6,11 @@
 
     <artifactId>deparment-service-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <embed-mongo.version>2.0.0</embed-mongo.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.agilityio</groupId>
@@ -26,6 +31,15 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>5.2.4.Final</version>
+        </dependency>
+
+        <!-- This dependency to work with embedded MongoDB in test environment
+        Ref: https://dzone.com/articles/spring-boot-with-embedded-mongodb -->
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <scope>test</scope>
+            <version>${embed-mongo.version}</version>
         </dependency>
     </dependencies>
 

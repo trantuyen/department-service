@@ -79,7 +79,7 @@ public class DepartmentController {
     }
 
     /**
-     * Delete a deparment.
+     * Delete a department.
      *
      * @param id Department id
      * @return Response ok if deleting success
