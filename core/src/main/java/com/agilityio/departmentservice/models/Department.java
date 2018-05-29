@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 
 @Getter
@@ -27,11 +28,13 @@ public class Department {
     /**
      * The department name
      */
+    @NotBlank
     private String name;
 
     /**
      * The department phone number
      */
+    @NotBlank
     private String phone;
 
     /**
