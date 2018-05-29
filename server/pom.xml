@@ -6,6 +6,18 @@
 
     <artifactId>deparment-service-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>com.agilityio</groupId>
+            <artifactId>department-service-core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>4.3.12.RELEASE</version>
+        </dependency>
+    </dependencies>
 
     <name>Department Service Server</name>
 
@@ -14,5 +26,14 @@
         <artifactId>department-service-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
