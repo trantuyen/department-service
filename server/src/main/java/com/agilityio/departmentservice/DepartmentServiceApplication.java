@@ -8,9 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan(basePackages = { "com.agilityio.departmentservice" })
-public class DepartmentServiceAplication {
+public class DepartmentServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DepartmentServiceAplication.class, args);
+        SpringApplication.run(DepartmentServiceApplication.class, args);
     }
 }
