@@ -32,17 +32,33 @@ public class Department {
     private String name;
 
     /**
-     * The department phone number
+     * The department phoneNumber number
      */
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
     /**
      * The department address
      */
     private String address;
 
+    /**
+     * Constructor
+     *
+     * @param name Department name
+     */
     public Department(String name) {
         this.name = name;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param name        Department name
+     * @param phoneNumber The phone number
+     */
+    public Department(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
     }
 }
