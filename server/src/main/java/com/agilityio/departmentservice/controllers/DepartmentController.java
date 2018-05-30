@@ -39,7 +39,7 @@ public class DepartmentController {
     @GetMapping
     public ResponseEntity<List<Department>> find() {
         // TODO:: Implement
-        return ResponseEntity.ok((List<Department>) new ArrayList<Department>());
+        return ResponseEntity.ok(new ArrayList<Department>());
     }
 
     /**
@@ -73,7 +73,8 @@ public class DepartmentController {
      * @return The updated department
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Department> update(@Valid @RequestBody Department department) {
+    public ResponseEntity<Department> update(@PathVariable(value = "id") String id,
+                                             @Valid @RequestBody Department department) {
         // TODO:: Implement
         return ResponseEntity.ok(department);
     }

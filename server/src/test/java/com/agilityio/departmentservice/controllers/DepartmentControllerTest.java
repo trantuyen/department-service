@@ -2,9 +2,11 @@ package com.agilityio.departmentservice.controllers;
 
 import com.agilityio.departmentservice.DepartmentServiceApplication;
 import com.agilityio.departmentservice.models.Department;
+import com.agilityio.departmentservice.models.DepartmentInternal;
 import com.agilityio.departmentservice.repositories.DepartmentRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.javafaker.Faker;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +23,8 @@ import java.util.Locale;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(
@@ -53,28 +57,49 @@ public class DepartmentControllerTest {
     }
 
     /**
+     * Test create a new department failed by missing body
+     */
+    @Test
+    public void testCreateDepartmentWithNoBoShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(baseUrlTemplate).content("").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    /**
      * Test create a new department failed by blank name
      */
     @Test
     public void testCreateDepartmentWithBlankNameShouldReturnBadRequest() throws Exception {
         // Test creating department failed by submitting a department with blank name
-        Department department = new Department("");
-        String json  = getJson(department);
-
-        mockMvc.perform(post(baseUrlTemplate).content(json).contentType(MediaType.APPLICATION_JSON))
+        Department department = Department.builder().name("").build();
+        mockMvc.perform(post(baseUrlTemplate).content(getJson(department)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
     /**
-     * Test create a new department failed by blank phoneNumber number
+     * Test create a new department failed by blank phone number
      */
     @Test
     public void testCreateDepartmentWithBlankPhoneShouldReturnBadRequest() throws Exception {
-        Department department = new Department("LightHouse", "");
-        String json  = getJson(department);
-
-        mockMvc.perform(post(baseUrlTemplate).content(json).contentType(MediaType.APPLICATION_JSON))
+        Department department = Department.builder().name("LightHouse").phoneNumber("").build();
+        mockMvc.perform(post(baseUrlTemplate).content(getJson(department)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    /**
+     * Test update failed by not found the give department in the system
+     */
+    @Test
+    public void testUpdateFailedByNotFoundDepartment() throws Exception {
+        String invalidId = "invalid";
+
+        Department department = Department.builder().name("LightHouse").phoneNumber(faker.phoneNumber().phoneNumber()).build();
+        department.setId(invalidId);
+
+        mockMvc.perform(put(baseUrlTemplate + "/" + invalidId)
+                .content(getJson(department))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     /**
@@ -82,15 +107,33 @@ public class DepartmentControllerTest {
      */
     @Test
     public void testCreateSuccess() throws Exception {
-        Department department = new Department("LightHouse", faker.phoneNumber().toString());
-        String json  = getJson(department);
-
-        mockMvc.perform(post(baseUrlTemplate).content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        String dpName = "LightHouse";
+        Department department = Department.builder().name(dpName).phoneNumber(faker.phoneNumber().phoneNumber()).build();
+        mockMvc.perform(post(baseUrlTemplate).content(getJson(department)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(dpName));
     }
 
+    /**
+     * Test update success
+     */
     @Test
-    public void update() {
+    public void testUpdateSuccess() throws Exception {
+        // Create new department
+        DepartmentInternal created = createDepartmentInternal();
+
+        // Verify created department
+        Assert.assertNotNull(created);
+        Assert.assertNotNull(created.getId());
+
+        // Set a new name, then update it
+        String newName = "Agilityio";
+        created.setName(newName);
+        mockMvc.perform(put(baseUrlTemplate + "/" + created.getId())
+                .content(getJson(created))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(newName));
     }
 
     @Test
@@ -116,5 +159,18 @@ public class DepartmentControllerTest {
      */
     private String getJson(Department department) throws JsonProcessingException {
         return springMvcJacksonConverter.getObjectMapper().writeValueAsString(department);
+    }
+
+    /**
+     * Create an internal department.
+     *
+     * @return DepartmentInternal
+     */
+    private DepartmentInternal createDepartmentInternal() {
+        DepartmentInternal dpInternal = new DepartmentInternal();
+        dpInternal.setName("LightHouse");
+        dpInternal.setPhoneNumber(faker.phoneNumber().phoneNumber());
+
+        return departmentRepository.save(dpInternal);
     }
 }
