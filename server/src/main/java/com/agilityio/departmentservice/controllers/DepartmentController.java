@@ -51,7 +51,7 @@ public class DepartmentController {
     @GetMapping("/{id}")
     public ResponseEntity<List<Department>> findOne(@PathVariable(value = "id") String id) {
         // TODO:: Implement
-        return ResponseEntity.ok((List<Department>) new ArrayList<Department>());
+        return ResponseEntity.ok(new ArrayList<Department>());
     }
 
     /**

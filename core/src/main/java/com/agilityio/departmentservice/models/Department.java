@@ -41,4 +41,8 @@ public class Department {
      * The department address
      */
     private String address;
+
+    public Department(String name) {
+        this.name = name;
+    }
 }
