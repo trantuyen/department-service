@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Locale;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -87,22 +88,6 @@ public class DepartmentControllerTest {
     }
 
     /**
-     * Test update failed by not found the give department in the system
-     */
-    @Test
-    public void testUpdateFailedByNotFoundDepartment() throws Exception {
-        String invalidId = "invalid";
-
-        Department department = Department.builder().name("LightHouse").phoneNumber(faker.phoneNumber().phoneNumber()).build();
-        department.setId(invalidId);
-
-        mockMvc.perform(put(baseUrlTemplate + "/" + invalidId)
-                .content(getJson(department))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    /**
      * Test create a new department success
      */
     @Test
@@ -120,7 +105,7 @@ public class DepartmentControllerTest {
     @Test
     public void testUpdateSuccess() throws Exception {
         // Create new department
-        DepartmentInternal created = createDepartmentInternal();
+        DepartmentInternal created = createDepartmentInternal("640 Nui Thanh", faker.phoneNumber().phoneNumber());
 
         // Verify created department
         Assert.assertNotNull(created);
@@ -136,18 +121,65 @@ public class DepartmentControllerTest {
                 .andExpect(jsonPath("$.name").value(newName));
     }
 
+    /**
+     * Test update failed by not found the give department in the system
+     */
     @Test
-    public void delete() {
+    public void testUpdateFailedByNotFoundDepartment() throws Exception {
+        String invalidId = "invalid";
+
+        Department department = Department.builder().name("LightHouse").phoneNumber(faker.phoneNumber().phoneNumber()).build();
+        department.setId(invalidId);
+
+        mockMvc.perform(put(baseUrlTemplate + "/" + invalidId)
+                .content(getJson(department))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
+    /**
+     * Test deleting department success.
+     */
+    @Test
+    public void testDeleteSuccess() throws Exception {
+        // Create new department
+        DepartmentInternal created = createDepartmentInternal("New department", faker.phoneNumber().phoneNumber());
+
+        // Verify created department
+        Assert.assertNotNull(created);
+        Assert.assertNotNull(created.getId());
+
+        mockMvc.perform(delete(baseUrlTemplate + "/" + created.getId())
+                .content(getJson(created))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    /**
+     * Test get all departments success.
+     */
     @Test
     public void testGetAllDepartmentSuccess() throws Exception {
         mockMvc.perform(get(baseUrlTemplate))
                 .andExpect(status().isOk());
     }
 
+    /**
+     * Test get a department by id success.
+     */
     @Test
-    public void findOne() {
+    public void testFindOneSuccess() throws Exception {
+        // Create new department
+        String name = "The One";
+        String phoneNumber = faker.phoneNumber().phoneNumber();
+        DepartmentInternal created = createDepartmentInternal(name, phoneNumber);
+
+        mockMvc.perform(get(baseUrlTemplate + "/" + created.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(created.getId()))
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.phoneNumber").value(phoneNumber));
     }
 
     /**
@@ -166,10 +198,10 @@ public class DepartmentControllerTest {
      *
      * @return DepartmentInternal
      */
-    private DepartmentInternal createDepartmentInternal() {
+    private DepartmentInternal createDepartmentInternal(String name, String phoneNumber) {
         DepartmentInternal dpInternal = new DepartmentInternal();
-        dpInternal.setName("LightHouse");
-        dpInternal.setPhoneNumber(faker.phoneNumber().phoneNumber());
+        dpInternal.setName(name);
+        dpInternal.setPhoneNumber(phoneNumber);
 
         return departmentRepository.save(dpInternal);
     }
