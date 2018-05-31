@@ -95,8 +95,15 @@ public class DepartmentController {
     @PutMapping("/{id}")
     public ResponseEntity<Department> update(@PathVariable(value = "id") String id,
                                              @Valid @RequestBody Department department) {
-        // TODO:: Implement
-        return ResponseEntity.ok(department);
+        DepartmentInternal departmentInternal = repository.findOne(id);
+
+        if (departmentInternal == null) {
+            throw new NotFoundResourceException();
+        }
+
+        mapper.update(department, departmentInternal);
+        departmentInternal = repository.save(departmentInternal);
+        return ResponseEntity.ok(mapper.toDepartment(departmentInternal));
     }
 
     /**
