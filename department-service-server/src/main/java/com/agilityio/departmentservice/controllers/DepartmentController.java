@@ -46,7 +46,7 @@ public class DepartmentController {
         List<DepartmentInternal> departmentInternals = repository.findAll();
 
         if (departmentInternals == null || departmentInternals.isEmpty()) {
-            throw new NotFoundResourceException();
+            throw new NotFoundResourceException("Could not found department.");
         }
 
         List<Department> departments = departmentInternals.stream()
@@ -66,7 +66,7 @@ public class DepartmentController {
     public ResponseEntity<Department> findOne(@PathVariable(value = "id") String id) {
         DepartmentInternal dpInternal = repository.findOne(id);
         if (dpInternal == null) {
-            throw new NotFoundResourceException();
+            throw new NotFoundResourceException("Could not found department.");
         }
 
         return ResponseEntity.ok(mapper.toDepartment(dpInternal));
@@ -98,7 +98,7 @@ public class DepartmentController {
         DepartmentInternal departmentInternal = repository.findOne(id);
 
         if (departmentInternal == null) {
-            throw new NotFoundResourceException();
+            throw new NotFoundResourceException("Could not found department.");
         }
 
         mapper.update(department, departmentInternal);
@@ -115,6 +115,6 @@ public class DepartmentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(value = "id") String id) {
         repository.delete(id);
-        return ResponseEntity.ok(ResponseEntity.ok());
+        return ResponseEntity.ok().build();
     }
 }
