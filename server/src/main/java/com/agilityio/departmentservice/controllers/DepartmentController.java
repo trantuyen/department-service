@@ -114,7 +114,7 @@ public class DepartmentController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(value = "id") String id) {
-        // TODO:: Implement
+        repository.delete(id);
         return ResponseEntity.ok(ResponseEntity.ok());
     }
 }
