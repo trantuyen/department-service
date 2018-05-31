@@ -160,8 +160,30 @@ public class DepartmentControllerTest {
      */
     @Test
     public void testGetAllDepartmentSuccess() throws Exception {
+        // Create new department
+        DepartmentInternal created = createDepartmentInternal("Test Get All Departments",
+                faker.phoneNumber().phoneNumber());
+
+        // Verify created department
+        Assert.assertNotNull(created);
+        Assert.assertNotNull(created.getId());
+
+        // Perform get all departments
         mockMvc.perform(get(baseUrlTemplate))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    /**
+     * Test get a department by id not found.
+     */
+    @Test
+    public void testFindOneFailedByNotFound() throws Exception {
+        String invalidId = "invalid";
+        mockMvc.perform(get(baseUrlTemplate + "/" + invalidId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     /**
