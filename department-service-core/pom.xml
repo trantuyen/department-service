@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <name>Department Service Core</name>
 
     <properties>
         <lombok.version>1.16.18</lombok.version>
