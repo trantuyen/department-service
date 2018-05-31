@@ -80,8 +80,10 @@ public class DepartmentController {
      */
     @PostMapping
     public ResponseEntity<Department> create(@Valid @RequestBody Department department) {
-        // TODO:: Implement
-        return ResponseEntity.ok(department);
+        DepartmentInternal departmentInternal = mapper.toDepartmentInternal(department);
+        departmentInternal = repository.save(departmentInternal);
+
+        return ResponseEntity.ok(mapper.toDepartment(departmentInternal));
     }
 
     /**
