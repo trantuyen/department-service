@@ -1,6 +1,9 @@
 package com.agilityio.departmentservice.controllers;
 
+import com.agilityio.departmentservice.exceptions.NotFoundResourceException;
 import com.agilityio.departmentservice.models.Department;
+import com.agilityio.departmentservice.models.DepartmentInternal;
+import com.agilityio.departmentservice.models.mappers.DepartmentMapper;
 import com.agilityio.departmentservice.repositories.DepartmentRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,22 +16,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("v1/departments")
 public class DepartmentController {
 
-    private final DepartmentRepository departmentRepository;
+    private final DepartmentRepository repository;
+    private final DepartmentMapper mapper;
 
     /**
      * Default constructor.
      *
-     * @param departmentRepository Department repository
+     * @param repository Department repository
      */
-    public DepartmentController(DepartmentRepository departmentRepository) {
-        this.departmentRepository = departmentRepository;
+    public DepartmentController(DepartmentRepository repository, DepartmentMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
     /**
@@ -38,8 +43,17 @@ public class DepartmentController {
      */
     @GetMapping
     public ResponseEntity<List<Department>> find() {
-        // TODO:: Implement
-        return ResponseEntity.ok(new ArrayList<Department>());
+        List<DepartmentInternal> departmentInternals = repository.findAll();
+
+        if (departmentInternals == null || departmentInternals.isEmpty()) {
+            throw new NotFoundResourceException();
+        }
+
+        List<Department> departments = departmentInternals.stream()
+                .map(mapper::toDepartment)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(departments);
     }
 
     /**
