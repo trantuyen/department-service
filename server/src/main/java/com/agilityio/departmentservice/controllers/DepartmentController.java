@@ -63,9 +63,13 @@ public class DepartmentController {
      * @return Department
      */
     @GetMapping("/{id}")
-    public ResponseEntity<List<Department>> findOne(@PathVariable(value = "id") String id) {
-        // TODO:: Implement
-        return ResponseEntity.ok(new ArrayList<Department>());
+    public ResponseEntity<Department> findOne(@PathVariable(value = "id") String id) {
+        DepartmentInternal dpInternal = repository.findOne(id);
+        if (dpInternal == null) {
+            throw new NotFoundResourceException();
+        }
+
+        return ResponseEntity.ok(mapper.toDepartment(dpInternal));
     }
 
     /**
