@@ -156,12 +156,12 @@ public class DepartmentControllerTest {
     }
 
     /**
-     * Test get all departments success.
+     * Test find all departments success.
      */
     @Test
-    public void testGetAllDepartmentSuccess() throws Exception {
+    public void testFindAllDepartmentSuccess() throws Exception {
         // Create new department
-        DepartmentInternal created = createDepartmentInternal("Test Get All Departments",
+        DepartmentInternal created = createDepartmentInternal("Test Find All Departments",
                 faker.phoneNumber().phoneNumber());
 
         // Verify created department
