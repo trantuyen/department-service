@@ -10,6 +10,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -21,6 +22,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Builder(builderMethodName = "builderInternal", buildMethodName = "buildInternal")
+@Document(collection = "department-services-departments")
 public class DepartmentInternal extends Department {
 
     @CreatedDate
