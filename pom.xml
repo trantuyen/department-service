@@ -15,6 +15,7 @@
     </parent>
 
     <modules>
+        <module>client</module>
         <module>core</module>
         <module>server</module>
     </modules>
