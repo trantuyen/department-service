@@ -1,3 +1,7 @@
+server:
+  # Feign Client will need this.
+  port: 9009
+
 spring:
 
   # MongoDB configuration
