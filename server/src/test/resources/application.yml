@@ -8,4 +8,4 @@ spring:
   data:
     mongodb:
       database: dbtest
-      port: 27017
+      port: 0

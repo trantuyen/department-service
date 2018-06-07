@@ -7,7 +7,7 @@ import org.springframework.cloud.netflix.ribbon.StaticServerList;
 import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
-public class DeparmentServiceRibbonClient {
+public class DepartmentServiceRibbonClient {
     public static final String NAME = "department-service";
 
     @Bean

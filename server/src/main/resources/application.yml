@@ -3,11 +3,10 @@ server:
 
 spring:
   application:
-    name: deparment-service
+    name: department-service
 
   # MongoDB configuration
   data:
     mongodb:
-      authentication-database: admin
       database: db
-      uri: mongodb://user:pass@localhost:27017/db
+      uri: mongodb://user:pass@localhost:27017/dbx
