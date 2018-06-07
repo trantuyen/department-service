@@ -1,8 +1,8 @@
 package com.agilityio.departmentservice.controllers;
 
+import com.agilityio.departmentservice.DepartmentClient;
 import com.agilityio.departmentservice.DepartmentServiceApplication;
 import com.agilityio.departmentservice.models.Department;
-import com.agilityio.departmentservice.models.DepartmentInternal;
 import com.agilityio.departmentservice.repositories.DepartmentRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.javafaker.Faker;
@@ -12,14 +12,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Locale;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,10 +33,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = DepartmentServiceApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@RunWith(SpringRunner.class)
+@ComponentScan(basePackages = "com.agilityio.departmentservice")
 public class DepartmentControllerTest {
 
     protected static final Faker faker = new Faker(new Locale("en-US"));
@@ -45,9 +51,13 @@ public class DepartmentControllerTest {
     @Autowired
     protected MappingJackson2HttpMessageConverter springMvcJacksonConverter;
 
+    @Autowired
+    protected DepartmentClient departmentClient;
+
     protected MockMvc mockMvc;
 
     private String baseUrlTemplate = "/v1/departments";
+
 
     @Before
     public void setUp() {
@@ -61,7 +71,7 @@ public class DepartmentControllerTest {
      * Test create a new department failed by missing body
      */
     @Test
-    public void testCreateDepartmentWithNoBoShouldReturnBadRequest() throws Exception {
+    public void testCreateDepartmentWithNoBodyShouldReturnBadRequest() throws Exception {
         mockMvc.perform(post(baseUrlTemplate).content("").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -93,9 +103,14 @@ public class DepartmentControllerTest {
     @Test
     public void testCreateSuccess() throws Exception {
         String dpName = "LightHouse";
-        Department department = Department.builder().name(dpName).phoneNumber(faker.phoneNumber().phoneNumber()).build();
+        Department department = Department.builder()
+                .name(dpName)
+                .phoneNumber(faker.phoneNumber().phoneNumber())
+                .build();
+
         mockMvc.perform(post(baseUrlTemplate).content(getJson(department)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.name").value(dpName));
     }
 
@@ -105,7 +120,7 @@ public class DepartmentControllerTest {
     @Test
     public void testUpdateSuccess() throws Exception {
         // Create new department
-        DepartmentInternal created = createDepartmentInternal("640 Nui Thanh", faker.phoneNumber().phoneNumber());
+        Department created = createDepartment("640 Nui Thanh", faker.phoneNumber().phoneNumber());
 
         // Verify created department
         Assert.assertNotNull(created);
@@ -118,6 +133,7 @@ public class DepartmentControllerTest {
                 .content(getJson(created))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(created.getId()))
                 .andExpect(jsonPath("$.name").value(newName));
     }
 
@@ -126,9 +142,13 @@ public class DepartmentControllerTest {
      */
     @Test
     public void testUpdateFailedByNotFoundDepartment() throws Exception {
-        String invalidId = "invalid";
+        String invalidId = UUID.randomUUID().toString();
 
-        Department department = Department.builder().name("LightHouse").phoneNumber(faker.phoneNumber().phoneNumber()).build();
+        Department department = Department.builder()
+                .name("LightHouse")
+                .phoneNumber(faker.phoneNumber().phoneNumber())
+                .build();
+
         department.setId(invalidId);
 
         mockMvc.perform(put(baseUrlTemplate + "/" + invalidId)
@@ -143,7 +163,7 @@ public class DepartmentControllerTest {
     @Test
     public void testDeleteSuccess() throws Exception {
         // Create new department
-        DepartmentInternal created = createDepartmentInternal("New department", faker.phoneNumber().phoneNumber());
+        Department created = createDepartment("New department", faker.phoneNumber().phoneNumber());
 
         // Verify created department
         Assert.assertNotNull(created);
@@ -161,7 +181,7 @@ public class DepartmentControllerTest {
     @Test
     public void testFindAllDepartmentSuccess() throws Exception {
         // Create new department
-        DepartmentInternal created = createDepartmentInternal("Test Find All Departments",
+        Department created = createDepartment("Test Find All Departments",
                 faker.phoneNumber().phoneNumber());
 
         // Verify created department
@@ -180,7 +200,7 @@ public class DepartmentControllerTest {
      */
     @Test
     public void testFindOneFailedByNotFound() throws Exception {
-        String invalidId = "invalid";
+        String invalidId = UUID.randomUUID().toString();
         mockMvc.perform(get(baseUrlTemplate + "/" + invalidId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -194,7 +214,7 @@ public class DepartmentControllerTest {
         // Create new department
         String name = "The One";
         String phoneNumber = faker.phoneNumber().phoneNumber();
-        DepartmentInternal created = createDepartmentInternal(name, phoneNumber);
+        Department created = createDepartment(name, phoneNumber);
 
         mockMvc.perform(get(baseUrlTemplate + "/" + created.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -216,15 +236,23 @@ public class DepartmentControllerTest {
     }
 
     /**
-     * Create an internal department.
+     * Create a department.
      *
-     * @return DepartmentInternal
+     * @return Department
      */
-    private DepartmentInternal createDepartmentInternal(String name, String phoneNumber) {
-        DepartmentInternal dpInternal = new DepartmentInternal();
-        dpInternal.setName(name);
-        dpInternal.setPhoneNumber(phoneNumber);
+    private Department createDepartment(String name, String phoneNumber) {
+        Assert.assertFalse(StringUtils.isEmpty(name));
+        Assert.assertFalse(StringUtils.isEmpty(phoneNumber));
 
-        return departmentRepository.save(dpInternal);
+        Department department = Department.builder().name(name).phoneNumber(phoneNumber).build();
+
+        ResponseEntity<Department> res = departmentClient.create(department);
+        Assert.assertEquals(res.getStatusCode(), HttpStatus.OK);
+
+        department = res.getBody();
+        Assert.assertNotNull(department);
+        Assert.assertNotNull(department.getId());
+
+        return department;
     }
 }

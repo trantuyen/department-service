@@ -21,7 +21,7 @@ public interface DepartmentClient {
      *
      * @return List of departments in system
      */
-    @GetMapping
+    @GetMapping("/v1/departments")
     ResponseEntity<List<Department>> find();
 
     /**
@@ -30,7 +30,7 @@ public interface DepartmentClient {
      * @param id Department id
      * @return Department
      */
-    @GetMapping("/{id}")
+    @GetMapping("/v1/departments/{id}")
     ResponseEntity<Department> findOne(@PathVariable(value = "id") String id);
 
     /**
@@ -39,7 +39,7 @@ public interface DepartmentClient {
      * @param department Department to create
      * @return The created department
      */
-    @PostMapping
+    @PostMapping("/v1/departments")
     ResponseEntity<Department> create(@Valid @RequestBody Department department);
 
     /**
@@ -48,7 +48,7 @@ public interface DepartmentClient {
      * @param department Department
      * @return The updated department
      */
-    @PutMapping("/{id}")
+    @PutMapping("/v1/departments/{id}")
     ResponseEntity<Department> update(@PathVariable(value = "id") String id, @Valid @RequestBody Department department);
 
     /**
@@ -57,6 +57,6 @@ public interface DepartmentClient {
      * @param id Department id
      * @return Response ok if deleting success
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/v1/departments/{id}")
     ResponseEntity<?> delete(@PathVariable(value = "id") String id);
 }
