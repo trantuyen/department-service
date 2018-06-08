@@ -8,5 +8,6 @@ spring:
   # MongoDB configuration
   data:
     mongodb:
-      database: db
-      uri: mongodb://user:pass@localhost:27017/dbx
+      authentication-database: ${MONGODB_AUTH_DATABASE:admin}
+      database: ${MONGODB_DATABASE:db}
+      uri: ${MONGODB_URI:mongodb://user:pass@localhost:27017/db}
